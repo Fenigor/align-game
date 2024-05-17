@@ -67,7 +67,6 @@ class AlignIt:
     def main(self):
         next_colors = [rand_color() for _ in range(3)]
         self.setup_game(next_colors)
-
         while True:
             self.draw_grid(False)
             if self.move_made:
@@ -90,6 +89,22 @@ class AlignIt:
         y_grid = int((y / BLOCKSIZE) - 3)
         return x_grid, y_grid
 
+    def validate_start_end_values(func):
+        def wrapper(self, x, y):
+            start = (
+                self.selected_square.grid_x,
+                self.selected_square.grid_y,
+            )
+            st_sqr = self.sqr_grid[start[0]][start[1]].color
+            nd_sqr = self.sqr_grid[x][y].color
+            func(self, x, y)
+            old = self.sqr_grid[start[0]][start[1]].color
+            new = self.sqr_grid[x][y].color
+            if not st_sqr == new and nd_sqr == old:
+                raise ValueError
+        return wrapper
+
+    @validate_start_end_values  # type: ignore
     def move_square(self, x, y):
         start = (
             self.selected_square.grid_x,
@@ -163,9 +178,9 @@ class AlignIt:
                 for col, y in enumerate(
                     range(OFFSET, WINDOW_HEIGHT, BLOCKSIZE),
                 ):
-                    rect = ColoredRect(WHITE, x, y)
+                    rect = ColoredRect(BLACK, x, y)
                     self.sqr_grid[row][col] = rect.draw_colored_rect(
-                        WHITE, 1, False,
+                        BLACK, 1, False,
                     )
         else:
             for row in self.sqr_grid:

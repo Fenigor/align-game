@@ -1,9 +1,12 @@
 from unittest import mock
+from unittest.mock import MagicMock
 
 import pytest
 
 from coloredRect import ColoredRect
 from constants import BLACK
+from constants import BLUE
+from constants import RED
 from game import AlignIt
 from game import normalize_cords
 
@@ -103,3 +106,21 @@ def test_check_length_remove_square(mock_rect):
             assert game.space[x][y] == 0
     assert game.spawn is False
     assert game.scoreall == 5
+
+
+@pytest.mark.skip
+@mock.patch('coloredRect.ColoredRect.draw_colored_rect')
+def test_wrapper(mock_rect):
+    mock_rect.return_value = MagicMock(ColoredRect(BLUE, 1, 0))
+
+    game = AlignIt(3)
+    game.space = [[1 for _ in range(3)] for _ in range(3)]
+    game.sqr_grid = [
+        [ColoredRect(BLACK, x, y)for x in range(3)] for y in range(3)
+    ]
+    game.sqr_grid[0][0].draw_colored_rect(BLUE)
+    game.sqr_grid[1][0].draw_colored_rect(RED)
+    game.selected_square = game.sqr_grid[0][0]
+    AlignIt.validate_start_end_values(game.move_square(1, 0))
+
+    # assert game.sqr_grid[0][0]
