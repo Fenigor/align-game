@@ -4,22 +4,30 @@ BLOCKSIZE = 50
 
 
 class ColoredRect(pygame.Rect):
-    def __init__(self, color, x, y):
+    def __init__(self, color, x, y, text='', font_size=30):
         super().__init__(x, y, BLOCKSIZE, BLOCKSIZE)
         x = (x - 150) / 50
         y = (y - 150) / 50
         self.color = color
         self.grid_x = int(x)
         self.grid_y = int(y)
+        self.text = text
+        self.font = pygame.font.SysFont('Arial', font_size)
 
     def __str__(self):
-        return f'{super().__str__()}, {self.color}'
+        return f'{super().__str__()}, {self.color}, {self.text}'
 
     def __repr__(self):
         return repr(self.__str__())
 
-    def draw_colored_rect(self, color, fill=0, overide=True):
-        if overide:
+    def draw_colored_rect(self, color, fill=0, override=True, text=None):
+        if override:
             self.color = color
         pygame.draw.rect(pygame.display.get_surface(), color, self, fill)
+        if text is not None:
+            self.text = text
+        if self.text:
+            text_surface = self.font.render(self.text, True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=self.center)
+            pygame.display.get_surface().blit(text_surface, text_rect)
         return self

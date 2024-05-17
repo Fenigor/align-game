@@ -30,6 +30,7 @@ def normalize_cords(x, y):
 
 class AlignIt:
     def __init__(self, dim=9):
+        pygame.init()
         self.spawn = True
         self.moves_made = 0
         self.scoreall = 0
@@ -104,6 +105,7 @@ class AlignIt:
         self.space[last[0]][last[1]] = 1
         self.space[first[0]][first[1]] = 0
         color = self.sqr_grid[first[0]][first[1]].color
+        text = self.sqr_grid[first[0]][first[1]].text
         self.moves_made += 1
         for i, cords in enumerate(path):
             prev_x = path[i-1][0]
@@ -111,7 +113,7 @@ class AlignIt:
             self.sqr_grid[prev_x][prev_y].draw_colored_rect(BLACK)
             x = cords[0]
             y = cords[1]
-            self.sqr_grid[x][y].draw_colored_rect(color)
+            self.sqr_grid[x][y].draw_colored_rect(color, text=text)
             sleep(0.05)
             pygame.display.update()
         self.move_made = True
@@ -174,6 +176,7 @@ class AlignIt:
 
     def draw_future_grid(self, colors):
         for i, color in enumerate(colors):
+            # letter = chr(65 + i)
             self.next_sqrs = ColoredRect(
                 color,
                 BLOCKSIZE,
@@ -197,6 +200,7 @@ class AlignIt:
                 and self.space[x_grid][y_grid] == 0
             ):
                 color = next_colors.pop()
+                # letter = chr(65 + placed)
                 self.sqr_grid[x_grid][y_grid] = ColoredRect(
                     color,
                     OFFSET + x_grid * BLOCKSIZE,
