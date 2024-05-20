@@ -9,6 +9,7 @@ from constants import BLACK
 from constants import BLOCKSIZE
 from constants import colorToLetter
 from constants import OFFSET
+from constants import OFFSETRD
 from constants import RED
 from constants import WINDOW_HEIGHT
 from constants import WINDOW_WIDTH
@@ -128,7 +129,11 @@ class AlignIt:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                if x < OFFSET or y < OFFSET:
+                if (
+                    x < OFFSET or y < OFFSET or
+                    x >= WINDOW_WIDTH - OFFSETRD or
+                    y >= WINDOW_HEIGHT - OFFSETRD
+                ):
                     break
                 x_grid, y_grid = self.get_square_cords(x, y)
                 if self.selected_square and self.space[x_grid][y_grid] == 0:
@@ -159,9 +164,13 @@ class AlignIt:
     def draw_grid(self, new):
         if new:
             row = 0
-            for row, x in enumerate(range(OFFSET, WINDOW_WIDTH, BLOCKSIZE)):
+            for row, x in enumerate(
+                range(
+                    OFFSET, WINDOW_WIDTH - OFFSETRD, BLOCKSIZE,
+                ),
+            ):
                 for col, y in enumerate(
-                    range(OFFSET, WINDOW_HEIGHT, BLOCKSIZE),
+                    range(OFFSET, WINDOW_HEIGHT - OFFSETRD, BLOCKSIZE),
                 ):
                     rect = ColoredRect(x, y, RED)
                     self.sqr_grid[row][col] = rect.draw_colored_rect(
