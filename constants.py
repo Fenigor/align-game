@@ -4,7 +4,7 @@ WINDOW_WIDTH = 637
 OFFSET = 150
 OFFSETRD = 37
 BLOCKSIZE = 50
-BLACK = '#ffffff00'
+BLACK = (0, 0, 0, 0)
 GREY = '#A8A8A8'
 WHITE = '#ffffff00'
 GREEN = '#03823F'
@@ -19,7 +19,8 @@ ORANGE = '#F7931E'
 colors = [
     GREEN, RED, BLUE, YELLOW, PURPLE, CYAN, ORANGE, BROWN,
 ]
-letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+letters = ['Ω', '«', '¥', 'ƴ', 'ᴥ', '♥', '♠', '♣', 'ƛ']
 
 colorToLetter = [(c, l)for c, l in zip(colors, letters)]
 # SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+# ['Ω', '♦', '۞', '♫', '☼', '♥', '♠', '♣', 'ƛ']

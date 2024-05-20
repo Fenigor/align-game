@@ -112,10 +112,12 @@ class AlignIt:
         for i, cords in enumerate(path):
             prev_x = path[i-1][0]
             prev_y = path[i-1][1]
-            self.sqr_grid[prev_x][prev_y].draw_colored_rect(BLACK)
+            self.sqr_grid[prev_x][prev_y].draw_colored_rect(BLACK, 0)
+            # print(self.sqr_grid[prev_x][prev_y])
             x = cords[0]
             y = cords[1]
             self.sqr_grid[x][y].draw_colored_rect(color).draw_text(letter)
+            print(self.sqr_grid[x][y])
             sleep(0.05)
             pygame.display.update()
         self.move_made = True
