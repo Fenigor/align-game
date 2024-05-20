@@ -19,4 +19,6 @@ colors = [
     GREEN, RED, BLUE, YELLOW, PURPLE, CYAN, ORANGE, BROWN,
 ]
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+
+colorToLetter = [(c, l)for c, l in zip(colors, letters)]
 # SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))

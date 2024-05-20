@@ -7,8 +7,7 @@ from astar import astar
 from coloredRect import ColoredRect
 from constants import BLACK
 from constants import BLOCKSIZE
-from constants import colors
-from constants import letters
+from constants import colorToLetter
 from constants import OFFSET
 from constants import RED
 from constants import WINDOW_HEIGHT
@@ -19,8 +18,8 @@ from constants import WINDOW_WIDTH
 # from stats import Stats
 
 
-def rand_color():
-    return random.choice(colors)
+def rand_pair():
+    return random.choice(colorToLetter)
 
 
 def normalize_cords(x, y):
@@ -39,7 +38,7 @@ class AlignIt:
         self.removed_lines = 0
         self.sqr_grid = [
             [
-                ColoredRect(BLACK, x, y)
+                ColoredRect(x, y, BLACK)
                 for x in range(dim)
             ] for y in range(dim)
         ]
@@ -51,7 +50,7 @@ class AlignIt:
         self.same_color_counter = 0
         # self.stats = Stats()
 
-    def setup_game(self, next_colors, next_letters):
+    def setup_game(self, next_pairs):
         global SCREEN, CLOCK
         pygame.init()
         self.text_font = pygame.font.SysFont('Arial', 30)
@@ -59,27 +58,25 @@ class AlignIt:
         CLOCK = pygame.time.Clock()
         img = pygame.image.load('unnamed.jpg')
         SCREEN.blit(img, (0, 0))
-        self.draw_future_grid(next_colors, next_letters)
+        self.draw_future_grid(next_pairs)
         self.draw_grid(True)
 
-    def aprove_spawning(self, next_colors, next_letters):
-        for x_grid, y_grid in self.draw_predicted(next_colors, next_letters):
+    def aprove_spawning(self, next_pairs):
+        for x_grid, y_grid in self.draw_predicted(next_pairs):
             self.update_score(x_grid, y_grid)
 
     def main(self):
-        next_colors = [rand_color() for _ in range(3)]
-        next_letters = random.sample(letters, 3)
-        self.setup_game(next_colors, next_letters)
+        next_pair = [rand_pair() for _ in range(3)]
+        self.setup_game(next_pair)
 
         while True:
             self.draw_grid(False)
             if self.move_made:
                 if self.spawn:
-                    self.aprove_spawning(next_colors, next_letters)
+                    self.aprove_spawning(next_pair)
                 self.spawn = True
-                next_colors = [rand_color() for _ in range(3)]
-                next_letters = random.sample(letters, 3)
-                self.draw_future_grid(next_colors, next_letters)
+                next_pair = [rand_pair() for _ in range(3)]
+                self.draw_future_grid(next_pair)
                 self.move_made = False
             self.handle_mouse_click()
             if self.selected_square is not None:
@@ -107,8 +104,9 @@ class AlignIt:
         last = path[-1]
         self.space[last[0]][last[1]] = 1
         self.space[first[0]][first[1]] = 0
-        color = self.sqr_grid[first[0]][first[1]].color
-
+        start_square = self.sqr_grid[first[0]][first[1]]
+        color = start_square.color
+        letter = start_square.letter
         self.moves_made += 1
         for i, cords in enumerate(path):
             prev_x = path[i-1][0]
@@ -116,9 +114,7 @@ class AlignIt:
             self.sqr_grid[prev_x][prev_y].draw_colored_rect(BLACK)
             x = cords[0]
             y = cords[1]
-            self.sqr_grid[x][y].draw_colored_rect(color).draw_text(
-                'move', font_size=20, color=(255, 255, 255),
-            )
+            self.sqr_grid[x][y].draw_colored_rect(color).draw_text(letter)
             sleep(0.05)
             pygame.display.update()
         self.move_made = True
@@ -143,11 +139,7 @@ class AlignIt:
                     break
                 self.selected_square = self.sqr_grid[x_grid][y_grid]
             if event.type == pygame.QUIT:
-                pass
-                # self.buttons_instance.quit_menu(
-                #     'Player name:', 'quit', 'reset', 'load',
-                #     (255, 255, 255), 200, 200,
-                # )
+                pygame.QUIT()
 
     def makes_square_pulse(self):
         sleep(.5)
@@ -155,6 +147,7 @@ class AlignIt:
             inf_val = 2
             self.grow = False
             color = self.selected_square.color
+
         else:
             inf_val = -2
             self.grow = True
@@ -170,7 +163,7 @@ class AlignIt:
                 for col, y in enumerate(
                     range(OFFSET, WINDOW_HEIGHT, BLOCKSIZE),
                 ):
-                    rect = ColoredRect(RED, x, y)
+                    rect = ColoredRect(x, y, RED)
                     self.sqr_grid[row][col] = rect.draw_colored_rect(
                         RED, 1, False,
                     )
@@ -179,20 +172,19 @@ class AlignIt:
                 for rect in row:
                     rect.draw_colored_rect(RED, 1, False)
 
-    def draw_future_grid(self, colors, letters):
-        random.shuffle(letters)
-        for i, (color, letter) in enumerate(zip(colors, letters)):
+    def draw_future_grid(self, next_pairs):
+        for i, (color, letter) in enumerate(next_pairs):
             self.next_sqrs = ColoredRect(
-                color,
-                # letter,
                 BLOCKSIZE,
                 ((i + 5) * BLOCKSIZE) +
                 (i * 25),
+                color,
+                letter,
             ).draw_colored_rect(
                 color,
-            ).draw_text(letter, font_size=20, color=(255, 255, 255))
+            ).draw_text(letter)
 
-    def draw_predicted(self, next_colors, next_letters):
+    def draw_predicted(self, next_pairs):
         placed = 0
         future_sqr_cord = []
         available_positions = 0
@@ -201,8 +193,7 @@ class AlignIt:
         while (
             placed < 3 and
             available_positions > 0 and
-            next_colors and
-            next_letters
+            next_pairs
         ):
             x = random.randint(OFFSET, WINDOW_WIDTH)
             y = random.randint(OFFSET, WINDOW_HEIGHT)
@@ -212,16 +203,16 @@ class AlignIt:
                 and 0 <= y_grid < len(self.space[0])
                 and self.space[x_grid][y_grid] == 0
             ):
-                color = next_colors.pop()
-                letter = next_letters.pop()
+                color, letter = next_pairs.pop()
 
                 self.sqr_grid[x_grid][y_grid] = ColoredRect(
-                    color,
                     OFFSET + x_grid * BLOCKSIZE,
                     OFFSET + y_grid * BLOCKSIZE,
+                    color,
+                    letter,
                 ).draw_colored_rect(
                     color,
-                ).draw_text(letter, font_size=20, color=(255, 255, 255))
+                ).draw_text(letter)
                 self.space[x_grid][y_grid] = 1
                 placed += 1
                 future_sqr_cord.append((x_grid, y_grid))
