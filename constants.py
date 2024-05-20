@@ -18,4 +18,5 @@ ORANGE = '#F7931E'
 colors = [
     GREEN, RED, BLUE, YELLOW, PURPLE, CYAN, ORANGE, BROWN,
 ]
+letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
 # SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
