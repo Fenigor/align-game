@@ -57,7 +57,8 @@ class AlignIt:
         # pygame.mixer.music.pause()
         SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         CLOCK = pygame.time.Clock()
-        SCREEN.fill(BLACK)
+        img = pygame.image.load('unnamed.jpg')
+        SCREEN.blit(img, (0, 0))
         self.draw_future_grid(next_colors)
         self.draw_grid(True)
 
@@ -105,7 +106,7 @@ class AlignIt:
         self.space[last[0]][last[1]] = 1
         self.space[first[0]][first[1]] = 0
         color = self.sqr_grid[first[0]][first[1]].color
-        text = self.sqr_grid[first[0]][first[1]].text
+
         self.moves_made += 1
         for i, cords in enumerate(path):
             prev_x = path[i-1][0]
@@ -113,7 +114,9 @@ class AlignIt:
             self.sqr_grid[prev_x][prev_y].draw_colored_rect(BLACK)
             x = cords[0]
             y = cords[1]
-            self.sqr_grid[x][y].draw_colored_rect(color, text=text)
+            self.sqr_grid[x][y].draw_colored_rect(color).draw_text(
+                f'{x},{y}', font_size=20, color=(255, 255, 255),
+            )
             sleep(0.05)
             pygame.display.update()
         self.move_made = True
@@ -176,13 +179,15 @@ class AlignIt:
 
     def draw_future_grid(self, colors):
         for i, color in enumerate(colors):
-            # letter = chr(65 + i)
+
             self.next_sqrs = ColoredRect(
                 color,
                 BLOCKSIZE,
                 ((i + 5) * BLOCKSIZE) +
                 (i * 25),
-            ).draw_colored_rect(color)
+            ).draw_colored_rect(
+                color,
+            ).draw_text('fut', font_size=20, color=(255, 255, 255))
 
     def draw_predicted(self, next_colors):
         placed = 0
@@ -200,12 +205,14 @@ class AlignIt:
                 and self.space[x_grid][y_grid] == 0
             ):
                 color = next_colors.pop()
-                # letter = chr(65 + placed)
+
                 self.sqr_grid[x_grid][y_grid] = ColoredRect(
                     color,
                     OFFSET + x_grid * BLOCKSIZE,
                     OFFSET + y_grid * BLOCKSIZE,
-                ).draw_colored_rect(color)
+                ).draw_colored_rect(
+                    color,
+                ).draw_text(f'{x}{y}', font_size=20, color=(255, 255, 255))
                 self.space[x_grid][y_grid] = 1
                 placed += 1
                 future_sqr_cord.append((x_grid, y_grid))
