@@ -18,7 +18,6 @@ from constants import WINDOW_WIDTH
 # from constants import WHITE
 # from buttons import Buttons
 # from buttons import Buttons
-# from stats import Stats
 
 
 def rand_pair():
@@ -37,7 +36,6 @@ class AlignIt:
         self.spawn = True
         self.moves_made = 0
         self.scoreall = 0
-        # self.buttons_instance = Buttons(self.scoreall, self.moves_made)
         self.removed_lines = 0
         self.sqr_grid = [
             [
@@ -51,7 +49,7 @@ class AlignIt:
         self.grow = True
         self.move_made = True
         self.same_color_counter = 0
-        # self.stats = Stats()
+        self.score_image = pygame.image.load('scoreimg.jpg')
 
     def setup_game(self, next_pairs):
         global SCREEN, CLOCK
@@ -67,6 +65,17 @@ class AlignIt:
     def aprove_spawning(self, next_pairs):
         for x_grid, y_grid in self.draw_predicted(next_pairs):
             self.update_score(x_grid, y_grid)
+
+    def score(self):
+        formatted_score = f'{self.scoreall:04}'
+        x_start = 413
+        y_start = 50
+        digit_spacing = 35
+        score_bg_rect = self.score_image.get_rect(topleft=(402, 41))
+        SCREEN.blit(self.score_image, score_bg_rect)
+        for i, digit in enumerate(formatted_score):
+            digit_img = self.text_font.render(digit, True, WHITE)
+            SCREEN.blit(digit_img, (x_start + i * digit_spacing, y_start))
 
     def main(self):
         next_pair = [rand_pair() for _ in range(3)]
@@ -84,7 +93,7 @@ class AlignIt:
             self.handle_mouse_click()
             if self.selected_square is not None:
                 self.makes_square_pulse()
-            # self.stats.score(self.scoreall)
+            self.score()
             # self.stats.movesmade()
             pygame.display.update()
 
@@ -191,7 +200,7 @@ class AlignIt:
             self.next_sqrs = ColoredRect(
                 47,
                 ((i + 4.67) * BLOCKSIZE) +
-                (i * 43),
+                (i * 42),
                 color,
                 letter,
             ).draw_colored_rect(
