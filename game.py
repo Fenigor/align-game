@@ -8,7 +8,7 @@ from coloredRect import ColoredRect
 from constants import BLACK
 from constants import BLOCKSIZE
 from constants import colorToLetter
-from constants import GREY
+from constants import FIELD
 from constants import OFFSET
 from constants import OFFSETRD
 from constants import RED
@@ -114,7 +114,7 @@ class AlignIt:
         for i, cords in enumerate(path):
             prev_x = path[i-1][0]
             prev_y = path[i-1][1]
-            self.sqr_grid[prev_x][prev_y].draw_colored_rect(GREY, 0)
+            self.sqr_grid[prev_x][prev_y].draw_colored_rect(FIELD, 0)
             # print(self.sqr_grid[prev_x][prev_y])
             x = cords[0]
             y = cords[1]
@@ -178,7 +178,7 @@ class AlignIt:
                 ):
                     rect = ColoredRect(x, y, RED)
                     self.sqr_grid[row][col] = rect.draw_colored_rect(
-                        RED, 1, False,
+                        FIELD, 0, False,
                     )
 
         else:
@@ -275,7 +275,7 @@ class AlignIt:
             if len(line) >= 5:
                 self.spawn = False
                 for x, y in line:
-                    self.sqr_grid[x][y].draw_colored_rect(BLACK)
+                    self.sqr_grid[x][y].draw_colored_rect(FIELD)
                     self.space[x][y] = 0
                 if direction in [0, 1, 2, 3]:
                     self.scoreall += len(line)
