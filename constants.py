@@ -19,7 +19,7 @@ ORANGE = '#F7931E'
 colors = [
     GREEN, RED, BLUE, YELLOW, PURPLE, CYAN, ORANGE, BROWN,
 ]
-letters = ['Ω', '«', '¥', 'ƴ', 'ᴥ', '♥', '♠', '♣', 'ƛ']
+letters = ['Ω', '«', '¥', 'ƴ', '¤', 'ǂ', 'Ħ', 'Ʌ']
 
 colorToLetter = [(c, l)for c, l in zip(colors, letters)]
 # SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))

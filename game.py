@@ -8,8 +8,10 @@ from coloredRect import ColoredRect
 from constants import BLACK
 from constants import BLOCKSIZE
 from constants import colorToLetter
+from constants import GREY
 from constants import OFFSET
 from constants import OFFSETRD
+from constants import RED
 from constants import WHITE
 from constants import WINDOW_HEIGHT
 from constants import WINDOW_WIDTH
@@ -112,7 +114,7 @@ class AlignIt:
         for i, cords in enumerate(path):
             prev_x = path[i-1][0]
             prev_y = path[i-1][1]
-            self.sqr_grid[prev_x][prev_y].draw_colored_rect(BLACK, 0)
+            self.sqr_grid[prev_x][prev_y].draw_colored_rect(GREY, 0)
             # print(self.sqr_grid[prev_x][prev_y])
             x = cords[0]
             y = cords[1]
@@ -174,21 +176,22 @@ class AlignIt:
                 for col, y in enumerate(
                     range(OFFSET, WINDOW_HEIGHT - OFFSETRD, BLOCKSIZE),
                 ):
-                    rect = ColoredRect(x, y, WHITE)
-                    # have to figure out how to keep the grid but not to draw
-                    self.sqr_grid[row][col] = rect
+                    rect = ColoredRect(x, y, RED)
+                    self.sqr_grid[row][col] = rect.draw_colored_rect(
+                        RED, 1, False,
+                    )
 
-        # else:
-        #     for row in self.sqr_grid:
-        #         for rect in row:
-        #             rect.draw_colored_rect(RED, 1, False)
+        else:
+            for row in self.sqr_grid:
+                for rect in row:
+                    rect.draw_colored_rect(WHITE, 1, False)
 
     def draw_future_grid(self, next_pairs):
         for i, (color, letter) in enumerate(next_pairs):
             self.next_sqrs = ColoredRect(
-                BLOCKSIZE,
-                ((i + 4.7) * BLOCKSIZE) +
-                (i * 41),
+                47,
+                ((i + 4.67) * BLOCKSIZE) +
+                (i * 43),
                 color,
                 letter,
             ).draw_colored_rect(
