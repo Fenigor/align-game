@@ -8,10 +8,11 @@ from coloredRect import ColoredRect
 from constants import BLACK
 from constants import BLOCKSIZE
 from constants import colorToLetter
-from constants import FIELD
+from constants import grid_color
 from constants import OFFSET
 from constants import OFFSETRD
 from constants import RED
+from constants import surface
 from constants import WHITE
 from constants import WINDOW_HEIGHT
 from constants import WINDOW_WIDTH
@@ -58,7 +59,11 @@ class AlignIt:
         SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         CLOCK = pygame.time.Clock()
         img = pygame.image.load('unnamed.jpg')
-        SCREEN.blit(img, (0, 0))
+        imgbg = pygame.image.load('bgversion.jpg')
+        if self.scoreall < 10:
+            SCREEN.blit(img, (0, 0))
+        else:
+            SCREEN.blit(imgbg, (0, 0))
         self.draw_future_grid(next_pairs)
         self.draw_grid(True)
 
@@ -82,6 +87,7 @@ class AlignIt:
         self.setup_game(next_pair)
 
         while True:
+            SCREEN.blit(surface, (0, 0))
             self.draw_grid(False)
             if self.move_made:
                 if self.spawn:
@@ -123,13 +129,11 @@ class AlignIt:
         for i, cords in enumerate(path):
             prev_x = path[i-1][0]
             prev_y = path[i-1][1]
-            self.sqr_grid[prev_x][prev_y].draw_colored_rect(FIELD, 0)
-            # print(self.sqr_grid[prev_x][prev_y])
+            self.sqr_grid[prev_x][prev_y].draw_colored_rect(BLACK)
             x = cords[0]
             y = cords[1]
             self.sqr_grid[x][y].draw_colored_rect(color).draw_text(letter)
-            print(self.sqr_grid[x][y])
-            sleep(0.05)
+            sleep(0.1)
             pygame.display.update()
         self.move_made = True
         self.selected_square = None
@@ -187,9 +191,8 @@ class AlignIt:
                 ):
                     rect = ColoredRect(x, y, RED)
                     self.sqr_grid[row][col] = rect.draw_colored_rect(
-                        FIELD, 0, False,
+                        grid_color, 1, False,
                     )
-
         else:
             for row in self.sqr_grid:
                 for rect in row:
@@ -284,7 +287,7 @@ class AlignIt:
             if len(line) >= 5:
                 self.spawn = False
                 for x, y in line:
-                    self.sqr_grid[x][y].draw_colored_rect(FIELD)
+                    self.sqr_grid[x][y].draw_colored_rect(grid_color)
                     self.space[x][y] = 0
                 if direction in [0, 1, 2, 3]:
                     self.scoreall += len(line)

@@ -1,7 +1,7 @@
 import pygame
 
+from constants import surface
 from constants import WHITE
-
 BLOCKSIZE = 50
 
 
@@ -24,13 +24,13 @@ class ColoredRect(pygame.Rect):
     def draw_colored_rect(self, color, fill=0, override=True):
         if override:
             self.color = color
-        pygame.draw.rect(pygame.display.get_surface(), color, self, fill)
+        pygame.draw.rect(surface, color, self, fill)
         return self
 
     def draw_text(self, letter, font_size=20, color=WHITE):
         font = pygame.font.SysFont('Arial', font_size)
         text_surface = font.render(letter, True, color)
         text_rect = text_surface.get_rect(center=self.center)
-        pygame.display.get_surface().blit(text_surface, text_rect)
+        surface.blit(text_surface, text_rect)
         self.letter = letter
         return self
