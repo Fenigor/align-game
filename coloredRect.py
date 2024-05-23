@@ -21,8 +21,8 @@ class ColoredRect(pygame.Rect):
     def __repr__(self):
         return repr(self.__str__())
 
-    def draw_colored_rect(self, color, fill=0, override=True):
-        if override:
+    def draw_colored_rect(self, color, fill=0, overwrite=True):
+        if overwrite:
             self.color = color
         pygame.draw.rect(pygame.display.get_surface(), color, self, fill)
         return self
