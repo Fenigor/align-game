@@ -7,21 +7,22 @@ from astar import astar
 from coloredRect import ColoredRect
 from constants import BLACK
 from constants import BLOCKSIZE
+from constants import CLOCK
 from constants import colorToLetter
+from constants import FPS
 from constants import grid_color
+from constants import IMG
 from constants import OFFSET
-from constants import OFFSETRD
+from constants import OFFSET_RIGHT_DOWN
 from constants import RED
-from constants import surface
+from constants import SCOREIMG
+from constants import SCREEN
 from constants import WHITE
 from constants import WINDOW_HEIGHT
 from constants import WINDOW_WIDTH
-# from constants import WHITE
-# from buttons import Buttons
-# from buttons import Buttons
 
 
-def rand_pair():
+def random_color_letter_pair():
     return random.choice(colorToLetter)
 
 
@@ -50,20 +51,12 @@ class AlignIt:
         self.grow = True
         self.move_made = True
         self.same_color_counter = 0
-        self.score_image = pygame.image.load('scoreimg.jpg')
+        self.run = True
 
     def setup_game(self, next_pairs):
-        global SCREEN, CLOCK
         pygame.init()
         self.text_font = pygame.font.SysFont('Arial', 30)
-        SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        CLOCK = pygame.time.Clock()
-        img = pygame.image.load('unnamed.jpg')
-        imgbg = pygame.image.load('bgversion.jpg')
-        if self.scoreall < 10:
-            SCREEN.blit(img, (0, 0))
-        else:
-            SCREEN.blit(imgbg, (0, 0))
+        SCREEN.blit(IMG, (0, 0))
         self.draw_future_grid(next_pairs)
         self.draw_grid(True)
 
@@ -76,24 +69,25 @@ class AlignIt:
         x_start = 413
         y_start = 50
         digit_spacing = 35
-        score_bg_rect = self.score_image.get_rect(topleft=(402, 41))
-        SCREEN.blit(self.score_image, score_bg_rect)
+        score_bg_rect = SCOREIMG.get_rect(topleft=(402, 41))
+        SCREEN.blit(SCOREIMG, score_bg_rect)
         for i, digit in enumerate(formatted_score):
             digit_img = self.text_font.render(digit, True, WHITE)
             SCREEN.blit(digit_img, (x_start + i * digit_spacing, y_start))
 
     def main(self):
-        next_pair = [rand_pair() for _ in range(3)]
+        next_pair = [random_color_letter_pair() for _ in range(3)]
         self.setup_game(next_pair)
 
-        while True:
-            SCREEN.blit(surface, (0, 0))
+        while self.run:
+            CLOCK.tick(FPS)
+            # SCREEN.blit(IMG, (0, 0))
             self.draw_grid(False)
             if self.move_made:
                 if self.spawn:
                     self.aprove_spawning(next_pair)
                 self.spawn = True
-                next_pair = [rand_pair() for _ in range(3)]
+                next_pair = [random_color_letter_pair() for _ in range(3)]
                 self.draw_future_grid(next_pair)
                 self.move_made = False
             self.handle_mouse_click()
@@ -102,6 +96,8 @@ class AlignIt:
             self.score()
             # self.stats.movesmade()
             pygame.display.update()
+
+        pygame.quit()
 
     def get_square_cords(self, x, y):
         x, y = normalize_cords(x, y)
@@ -148,8 +144,8 @@ class AlignIt:
                 x, y = pygame.mouse.get_pos()
                 if (
                     x < OFFSET or y < OFFSET or
-                    x >= WINDOW_WIDTH - OFFSETRD or
-                    y >= WINDOW_HEIGHT - OFFSETRD
+                    x >= WINDOW_WIDTH - OFFSET_RIGHT_DOWN or
+                    y >= WINDOW_HEIGHT - OFFSET_RIGHT_DOWN
                 ):
                     break
                 x_grid, y_grid = self.get_square_cords(x, y)
@@ -161,7 +157,7 @@ class AlignIt:
                     break
                 self.selected_square = self.sqr_grid[x_grid][y_grid]
             if event.type == pygame.QUIT:
-                pygame.QUIT()
+                self.run = False
 
     def makes_square_pulse(self):
         sleep(.5)
@@ -183,11 +179,14 @@ class AlignIt:
             row = 0
             for row, x in enumerate(
                 range(
-                    OFFSET, WINDOW_WIDTH - OFFSETRD, BLOCKSIZE,
+                    OFFSET, WINDOW_WIDTH - OFFSET_RIGHT_DOWN, BLOCKSIZE,
                 ),
             ):
                 for col, y in enumerate(
-                    range(OFFSET, WINDOW_HEIGHT - OFFSETRD, BLOCKSIZE),
+                    range(
+                        OFFSET, WINDOW_HEIGHT -
+                        OFFSET_RIGHT_DOWN, BLOCKSIZE,
+                    ),
                 ):
                     rect = ColoredRect(x, y, RED)
                     self.sqr_grid[row][col] = rect.draw_colored_rect(
