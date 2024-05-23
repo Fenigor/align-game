@@ -1,8 +1,10 @@
 import pygame
+
+FPS = 60
 WINDOW_HEIGHT = 635
 WINDOW_WIDTH = 635
 OFFSET = 150
-OFFSETRD = 37
+OFFSET_RIGHT_DOWN = 35
 BLOCKSIZE = 50
 transparency = 120
 BLACK = (0, 0, 0, 255)
@@ -23,7 +25,12 @@ colors = [
 ]
 letters = ['Ω', '«', '¥', 'ƴ', '¤', 'ǂ', 'Ħ', 'Ʌ']
 
-colorToLetter = [(c, l)for c, l in zip(colors, letters)]
-# SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+colorToLetter = list(zip(colors, letters))
+assets_dir = 'assets'
+
+SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SCALED)
+CLOCK = pygame.time.Clock()
+IMG = pygame.image.load(f'{assets_dir}/board.jpg').convert()
+IMG = pygame.transform.smoothscale(IMG, SCREEN.get_size())
+SCOREIMG = pygame.image.load(f'{assets_dir}/scoreimg.jpg')
 # ['Ω', '♦', '۞', '♫', '☼', '♥', '♠', '♣', 'ƛ']
-surface = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
