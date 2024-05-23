@@ -1,21 +1,36 @@
-# import pygame
-WINDOW_HEIGHT = 600
-WINDOW_WIDTH = 600
+import pygame
+
+FPS = 60
+WINDOW_HEIGHT = 635
+WINDOW_WIDTH = 635
 OFFSET = 150
+OFFSET_RIGHT_DOWN = 35
 BLOCKSIZE = 50
-BLACK = (0, 0, 0)
-GREY = (160, 160, 160)
-WHITE = (200, 200, 200)
-GREEN = '#00A14B'
+transparency = 120
+BLACK = (0, 0, 0, 0)
+GREY = '#A8A8A8'
+WHITE = '#ffffff00'
+GREEN = '#03823F'
 RED = '#ED1C24'
-BLUE = '#21409A'
-YELLOW = '#FFDE17'
-PURPLE = '#7F3F98'
-CYAN = '#009599'
-PINK = (255, 153, 255)
-BROWN = (255, 128, 0)
-ORANGE = '#F26522'
+BLUE = '#3E46AF'
+YELLOW = '#CCB905'
+PURPLE = '#662D91'
+CYAN = '#00A99D'
+PINK = '#C40580'
+BROWN = '#753A0D'
+ORANGE = '#F7931E'
+grid_color = '#FFC4FD'
 colors = [
-    GREEN, RED,  BLUE, YELLOW, PURPLE, CYAN, ORANGE, BROWN,
+    GREEN, RED, BLUE, YELLOW, PURPLE, CYAN, ORANGE, BROWN,
 ]
-# SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+letters = ['Ω', '«', '¥', 'ƴ', '¤', 'ǂ', 'Ħ', 'Ʌ']
+
+colorToLetter = list(zip(colors, letters))
+assets_dir = 'assets'
+
+SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+CLOCK = pygame.time.Clock()
+IMG = pygame.image.load(f'{assets_dir}/board.jpg').convert()
+IMG = pygame.transform.smoothscale(IMG, SCREEN.get_size())
+SCOREIMG = pygame.image.load(f'{assets_dir}/scoreimg.jpg')
+# ['Ω', '♦', '۞', '♫', '☼', '♥', '♠', '♣', 'ƛ']

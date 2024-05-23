@@ -79,7 +79,7 @@ def test_find_adjacent_color(directions, x, y):
     game = AlignIt()
     game.space = [[1 for _ in range(3)] for _ in range(3)]
     game.sqr_grid = [
-        [ColoredRect(BLACK, x, y)for x in range(3)] for y in range(3)
+        [ColoredRect(x, y, BLACK)for x in range(3)] for y in range(3)
     ]
     lines = game.find_adjacent_color(x, y)
     assert lines[0] == directions[0]
@@ -93,7 +93,7 @@ def test_check_length_remove_square(mock_rect):
     game = AlignIt()
     game.space = [[1 for _ in range(5)] for _ in range(5)]
     game.sqr_grid = [
-        [ColoredRect(BLACK, x, y)for x in range(5)] for y in range(5)
+        [ColoredRect(x, y, BLACK)for x in range(5)] for y in range(5)
     ]
     lines = {0: [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)]}
     game.check_length_remove_square(lines)
