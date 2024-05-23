@@ -14,7 +14,6 @@ from constants import grid_color
 from constants import IMG
 from constants import OFFSET
 from constants import OFFSET_RIGHT_DOWN
-from constants import RED
 from constants import SCOREIMG
 from constants import SCREEN
 from constants import WHITE
@@ -41,10 +40,28 @@ class AlignIt:
         self.removed_lines = 0
         self.sqr_grid = [
             [
-                ColoredRect(x, y, BLACK)
+                ColoredRect(
+                    x * BLOCKSIZE + OFFSET, y *
+                    BLOCKSIZE + OFFSET, BLACK,
+                )
                 for x in range(dim)
             ] for y in range(dim)
         ]
+        for row, x in enumerate(
+                range(
+                    OFFSET, WINDOW_WIDTH - OFFSET_RIGHT_DOWN, BLOCKSIZE,
+                ),
+        ):
+            for col, y in enumerate(
+                range(
+                    OFFSET, WINDOW_HEIGHT -
+                    OFFSET_RIGHT_DOWN, BLOCKSIZE,
+                ),
+            ):
+                rect = ColoredRect(x, y, WHITE)
+                self.sqr_grid[row][col] = rect.draw_colored_rect(
+                    grid_color, 1, False,
+                )
         self.space = [[0 for _ in range(dim)] for _ in range(dim)]
         self.next_sqrs = []
         self.selected_square = None
@@ -58,7 +75,7 @@ class AlignIt:
         self.text_font = pygame.font.SysFont('Arial', 30)
         SCREEN.blit(IMG, (0, 0))
         self.draw_future_grid(next_pairs)
-        self.draw_grid(True)
+        # self.draw_grid(True)
 
     def aprove_spawning(self, next_pairs):
         for x_grid, y_grid in self.draw_predicted(next_pairs):
@@ -81,7 +98,8 @@ class AlignIt:
 
         while self.run:
             CLOCK.tick(FPS)
-            # SCREEN.blit(IMG, (0, 0))
+            SCREEN.blit(IMG, (0, 0))
+            self.draw_squares()
             self.draw_grid(False)
             if self.move_made:
                 if self.spawn:
@@ -94,7 +112,10 @@ class AlignIt:
             if self.selected_square is not None:
                 self.makes_square_pulse()
             self.score()
+
             # self.stats.movesmade()
+            # SCREEN.blit(IMG, (0, 0))
+
             pygame.display.update()
 
         pygame.quit()
@@ -104,6 +125,13 @@ class AlignIt:
         x_grid = int((x / BLOCKSIZE) - 3)
         y_grid = int((y / BLOCKSIZE) - 3)
         return x_grid, y_grid
+
+    def draw_squares(self):
+        for i in range(9):
+            for j in range(9):
+                color = self.sqr_grid[i][j].color
+                if color is not BLACK:
+                    self.sqr_grid[i][j].draw_colored_rect(color)
 
     def move_square(self, x, y):
         start = (
@@ -188,7 +216,7 @@ class AlignIt:
                         OFFSET_RIGHT_DOWN, BLOCKSIZE,
                     ),
                 ):
-                    rect = ColoredRect(x, y, RED)
+                    rect = ColoredRect(x, y, WHITE)
                     self.sqr_grid[row][col] = rect.draw_colored_rect(
                         grid_color, 1, False,
                     )
