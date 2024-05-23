@@ -7,7 +7,7 @@ OFFSET = 150
 OFFSET_RIGHT_DOWN = 35
 BLOCKSIZE = 50
 transparency = 120
-BLACK = (0, 0, 0, 255)
+BLACK = (0, 0, 0, 0)
 GREY = '#A8A8A8'
 WHITE = '#ffffff00'
 GREEN = '#03823F'
@@ -28,7 +28,7 @@ letters = ['Ω', '«', '¥', 'ƴ', '¤', 'ǂ', 'Ħ', 'Ʌ']
 colorToLetter = list(zip(colors, letters))
 assets_dir = 'assets'
 
-SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SCALED)
+SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 CLOCK = pygame.time.Clock()
 IMG = pygame.image.load(f'{assets_dir}/board.jpg').convert()
 IMG = pygame.transform.smoothscale(IMG, SCREEN.get_size())
