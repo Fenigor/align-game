@@ -441,7 +441,7 @@ class MyPaintApp(App):
                 print('------------------------------')
 
 # if the color is unique but the adjacent is not
-            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/green.png':
+            if current_image == UNIQUE_BUTT and adjacent_image == 'assets/green.png':
                 current_line.add((x, y))  # have to indentify what color the
                 # adjacent_image is so it removes only that color
             elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/pink.png':
@@ -456,11 +456,6 @@ class MyPaintApp(App):
                 current_line.add((x, y))
             elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/orange.png':
                 current_line.add((x, y))
-
-#     print(f"Added ({x}, {y}) to current_line; unique image matched with {adjacent_image}")
-#     print('------------------------------')
-# elif current_image == UNIQUE_BUTT and adjacent_image == current_image:
-#     current_line.add((x, y)) # problem potentioly here
 
     def is_within_bounds(self, x, y):
         return 0 <= x < 9 and 0 <= y < 9
