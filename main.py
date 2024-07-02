@@ -436,26 +436,26 @@ class MyPaintApp(App):
             if adjacent_image in (current_image, UNIQUE_BUTT):
                 current_line.add((x, y))
                 print(
-                    f'curentimag{current_image}andajacentimag{adjacent_image}',
+                    f'curentimg{current_image}ajacentimg{adjacent_image}',
                 )
                 print('------------------------------')
 
 # if the color is unique but the adjacent is not
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/green.png":
-#     current_line.add((x, y)) # have to indentify what color the
-#                              adjacent_image is so it removes only that color
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/pink.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/blue.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/yellow.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/turquoise.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/purple.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/orange.png":
-#     current_line.add((x, y))
+            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/green.png':
+                current_line.add((x, y))  # have to indentify what color the
+                # adjacent_image is so it removes only that color
+            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/pink.png':
+                current_line.add((x, y))
+            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/blue.png':
+                current_line.add((x, y))
+            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/yellow.png':
+                current_line.add((x, y))
+            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/turquoise.png':
+                current_line.add((x, y))
+            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/purple.png':
+                current_line.add((x, y))
+            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/orange.png':
+                current_line.add((x, y))
 
 #     print(f"Added ({x}, {y}) to current_line; unique image matched with {adjacent_image}")
 #     print('------------------------------')
