@@ -402,7 +402,8 @@ class MyPaintApp(App):
         x, y = row, col
         dir_x, dir_y = direction
         previous_image = None
-        while True:
+        run = True
+        while run:
             x += dir_x
             y += dir_y
             if not self.is_within_bounds(x, y):
@@ -417,6 +418,7 @@ class MyPaintApp(App):
 
             if not previous_image and adjacent_image != UNIQUE_BUTT:
                 previous_image = adjacent_image
+
                 # print(f'Set previous_image to {previous_image}')
                 # print('------------------------------')
             if previous_image and adjacent_image not in (
@@ -433,30 +435,54 @@ class MyPaintApp(App):
 # of line of same color nothing happens
 # if you stack 4 unique and 1 color the or 5 unique they disapear
 
-            if adjacent_image in (current_image, UNIQUE_BUTT):
+            # if adjacent_image in (current_image, UNIQUE_BUTT):
+            #     current_line.add((x, y))
+            if current_image == 'assets/green.png' and (adjacent_image == 'assets/green.png' or adjacent_image == UNIQUE_BUTT):
                 current_line.add((x, y))
-                print(
-                    f'curentimg{current_image}ajacentimg{adjacent_image}',
-                )
-                print('------------------------------')
+                print('current green to green or unique')
+            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/green.png':
+                if (x, y) in current_line in adjacent_image:
+                    current_line.add((x, y))
 
-# if the color is unique but the adjacent is not
-            if current_image == UNIQUE_BUTT and adjacent_image == 'assets/green.png':
-                current_line.add((x, y))  # have to indentify what color the
-                # adjacent_image is so it removes only that color
+            # elif current_image == UNIQUE_BUTT and adjacent_image != 'assets/green.png':
+            #     if (x, y) in current_line in adjacent_image:
+            #         current_line.add((x, y))
+            #     if (x, y) in current_line in adjacent_image == UNIQUE_BUTT:
+            #         current_line.add((x, y))
+
+            if current_image == 'assets/pink.png' and (adjacent_image == 'assets/pink.png' or adjacent_image == UNIQUE_BUTT):
+                run = True
+                current_line.add((x, y))
             elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/pink.png':
                 current_line.add((x, y))
-            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/blue.png':
-                current_line.add((x, y))
-            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/yellow.png':
-                current_line.add((x, y))
-            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/turquoise.png':
-                current_line.add((x, y))
-            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/purple.png':
-                current_line.add((x, y))
-            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/orange.png':
-                current_line.add((x, y))
+            # elif current_image == UNIQUE_BUTT and adjacent_image != 'assets/pink.png':
+            #     continue
 
+
+# if the color is unique but the adjacent is not
+            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/green.png':
+            #     current_line.add((x, y))  # have to indentify what color the
+            #     # adjacent_image is so it removes only that color
+
+            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/pink.png':
+                # if (x, y) in current_line in adjacent_image:
+                #     current_line.add((x, y))
+                # if (x, y) in current_line in adjacent_image == UNIQUE_BUTT:
+                #     current_line.add((x, y))
+            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/pink.png':
+
+            #     current_line.add((x, y))
+
+            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/blue.png':
+            #     current_line.add((x, y))
+            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/yellow.png':
+            #     current_line.add((x, y))
+            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/turquoise.png':
+            #     current_line.add((x, y))
+            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/purple.png':
+            #     current_line.add((x, y))
+            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/orange.png':
+            #     current_line.add((x, y))
     def is_within_bounds(self, x, y):
         return 0 <= x < 9 and 0 <= y < 9
 
