@@ -55,9 +55,11 @@ class MyPaintApp(App):
         self.score_manager = ScoreManager(self)
         self.func_manager = FuncManager(self)
         self.func_manager.load_game_state()
-        self.no_path_sound = SoundLoader.load('assets/no path.wav')
         self.is_moving = False
-
+        try:
+            self.no_path_sound = SoundLoader.load('assets/no path.wav')
+        except Exception:
+            return None
         self.right_wide = 0.11
         self.left_wide = 0.36
         self.top_height = 0.77
@@ -86,11 +88,11 @@ class MyPaintApp(App):
     #         self.top_height += diff / 1000
     #         self.bottom_height += diff / 1000
 
-    def build_grid_layout(self):
+    def build_grid_layout(self, cols=9, rows=9, spacing=16):
         self.grid_layout = GridLayout(
-            cols=9, rows=9,
+            cols=cols, rows=rows,
             size_hint=(1.0, 1.0),
-            spacing=16,
+            spacing=spacing,
         )
         for row in range(9):
             for col in range(9):
@@ -483,6 +485,7 @@ class MyPaintApp(App):
             #     current_line.add((x, y))
             # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/orange.png':
             #     current_line.add((x, y))
+
     def is_within_bounds(self, x, y):
         return 0 <= x < 9 and 0 <= y < 9
 
