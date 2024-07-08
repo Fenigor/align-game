@@ -248,10 +248,9 @@ class MyPaintApp(App):
     def handle_reached_destination(self):
         start = self.selected_button[1], self.selected_button[2]
         self.update_logical_grid(self.path[-1][0], self.path[-1][1], start)
-        adjacent_lines = self.handle_lines.find_adjacent_lines(
-            self.path[-1][0],
-            self.path[-1][1],
-        )
+        row, col = self.path[-1][0], self.path[-1][1]
+        self.handle_lines.remove_lines_if_unique(row, col)
+        adjacent_lines = self.handle_lines.find_adjacent_lines(row, col)
         if adjacent_lines:
             self.check_length_remove_square(adjacent_lines)
         self.enable_grid_buttons()
@@ -284,7 +283,7 @@ class MyPaintApp(App):
         images = [img.source for img in self.button_layout.children]
         self.update_button_layout_images()
         self.update_grid_with_new_images(cords, images)
-        self.handle_lines.find_adjacent_lines(cords[0][0], cords[0][1])
+        # self.handle_lines.find_adjacent_lines(cords[0][0], cords[0][1])
 
     def gameover(self):
         print('Game Over')
@@ -402,12 +401,12 @@ class MyPaintApp(App):
         self.score_manager.score += (initial_length - len(self.pos_set))
         self.score_manager.update_score_label()
 
-    def remove_line(self, line):
-        for x, y in line:
-            if self.is_within_bounds(x, y):
-                button_index = 9 * (8 - x) + (8 - y)
-                if button_index < len(self.grid_layout.children):
-                    self.clear_button(x, y)
+    # def remove_line(self, line):
+    #     for x, y in line:
+    #         if self.is_within_bounds(x, y):
+    #             button_index = 9 * (8 - x) + (8 - y)
+    #             if button_index < len(self.grid_layout.children):
+    #                 self.clear_button(x, y)
 
     def clear_button(self, x, y):
         self.get_button_at(x, y).background_normal = ''

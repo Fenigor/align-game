@@ -6,68 +6,57 @@ class ColorButtonManager:
     def find_adjacent_lines(self, row, col):
         directions = [
             (1, 0), (0, 1), (1, 1), (1, -1),
-            (-1, 0), (0, -1), (-1, -1), (-1, 1),
         ]
         current_image = self.app.get_button_at(row, col).background_normal
         adjacent_lines = set()
         for direction in directions:
-            current_line = self.find_line_in_direction(
-                set(), direction, row, col, current_image,
-            )
-            if len(current_line) >= 5:
-                print(f'if len(current_line) >= 5: {current_line}')
-                adjacent_lines.update(current_line)
+            line = self.find_full_line(direction, row, col, current_image)
+            if len(line) >= 5:
+                adjacent_lines.update(line)
         return adjacent_lines
 
-    def find_line_in_direction(self, current_line, direction, row, col, current_image):
+    def find_full_line(self, direction, row, col, current_image):
+        line1 = self.find_line_in_direction(direction, row, col, current_image)
+        line2 = self.find_line_in_direction(
+            (-direction[0], -direction[1]), row, col, current_image,
+        )
+        full_line = line1.union(line2)
+        full_line.add((row, col))
+        return full_line
+
+    def find_line_in_direction(self, direction, row, col, current_image):
         x, y = row, col
         dir_x, dir_y = direction
-        previous_image = None
-        run = True
-        line_in_dir = []
-
-        while run:
-
+        line_in_dir = set()
+        while True:
+            x += dir_x
+            y += dir_y
             if self.app.is_within_bounds(x, y):
                 adjacent_button = self.app.get_button_at(x, y)
                 adjacent_image = adjacent_button.background_normal
-                if adjacent_image == '':
+
+                if adjacent_image == '' or (adjacent_image != current_image and adjacent_image != self.UNIQUE_BUTT):
                     break
-
-                if not previous_image and adjacent_image != self.UNIQUE_BUTT:
-                    previous_image = adjacent_image
-
-                if previous_image and adjacent_image not in (previous_image, self.UNIQUE_BUTT):
-                    break
-
-                line_in_dir.append((x, y))
-                print('--------------------')
-                print(f'line_in_dir.append((x, y)) {line_in_dir}')
-                print(f'{current_image}, {adjacent_image}')
-                print('--------------------')
-
-                if current_image == self.UNIQUE_BUTT:
-                    # if len(line_in_dir) >= 5:
-                    current_line.update(line_in_dir)
-                else:
-                    if adjacent_image == current_image or adjacent_image == self.UNIQUE_BUTT:
-                        current_line.add((x, y))
-                    else:
-                        # if len(line_in_dir) >= 5:
-                        current_line.update(line_in_dir)
-                        break
-
-                x += dir_x
-                y += dir_y
+                elif adjacent_image == current_image or adjacent_image == self.UNIQUE_BUTT:
+                    line_in_dir.add((x, y))
             else:
                 break
-
-        if len(current_line) >= 5:
-            return current_line
-        else:
-            return set()
+        return line_in_dir
 
     def remove_line(self, line):
+        total_lines_to_remove = set()
         for x, y in line:
-            if self.app.is_within_bounds(x, y):
-                self.app.clear_button(x, y)
+            lines = self.find_adjacent_lines(x, y)
+            if len(lines) >= 5:
+                total_lines_to_remove.update(lines)
+        if len(total_lines_to_remove) >= 5:
+            for x, y in total_lines_to_remove:
+                if self.app.is_within_bounds(x, y):
+                    self.app.clear_button(x, y)
+
+    def remove_lines_if_unique(self, row, col):
+        current_image = self.app.get_button_at(row, col).background_normal
+        if current_image == self.UNIQUE_BUTT:
+            lines = self.find_adjacent_lines(row, col)
+            if len(lines) >= 5:
+                self.remove_line(lines)
