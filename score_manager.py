@@ -14,7 +14,6 @@ class ScoreManager:
         self.score_file = 'score.txt'
 
     def score_check_button(self):
-        # TODO: CHANGE TO STAR when Kati provides the img
         img_source = 'assets/score.png'
         self.sc_button = Button(
             background_normal=img_source,
@@ -33,8 +32,6 @@ class ScoreManager:
                 scores = [int(score) for score in lines[4].strip().split(',')]
         if scores[0] == 0:
             print('no score yet')
-            # if no file is found maybe we should,
-            #  no highscores yet, get to aligning!
         if self.game.overlay is None:
             self.game.overlay = Widget()
             with self.game.overlay.canvas:
@@ -79,6 +76,5 @@ class ScoreManager:
             pos_hint={'x': 0.64, 'y': 0.784},
             size_hint=(dp(0.2), dp(0.2)),
             font_size=sp(49),
-
             halign='center',
         )

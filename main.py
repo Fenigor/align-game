@@ -25,11 +25,11 @@ BOARD = 'assets/board.jpg'
 IMAGE_LIST = [
     'assets/pink.png',
     'assets/green.png',
-    # 'assets/blue.png',
-    # 'assets/yellow.png',
-    # 'assets/turquoise.png',
-    # 'assets/orange.png',
-    # 'assets/purple.png',
+    'assets/blue.png',
+    'assets/yellow.png',
+    'assets/turquoise.png',
+    'assets/orange.png',
+    'assets/purple.png',
     UNIQUE_BUTT,
 ]
 
@@ -62,29 +62,6 @@ class MyPaintApp(App):
         self.left_wide = 0.36
         self.top_height = 0.77
         self.bottom_height = 0.50
-
-        # scaling for tablet 1200x2000
-        # self.right_wide = 0.11
-        # self.left_wide = 0.36
-        # self.top_height = 0.83
-        # self.bottom_height = 0.55
-
-        # phone scaling
-        # self.right_wide = 0.11
-        # self.left_wide = 0.36
-        # self.top_height = 1.267
-        # self.bottom_height = 1.0
-
-    # algorytm for dynamic scaling
-    # def window_size(self, instance, width, height):
-    #     if width > height:
-    #         diff = width - height
-    #         self.right_wide += diff / 1000
-    #         self.left_wide += diff / 1000
-    #     if height > width:
-    #         diff = height - width
-    #         self.top_height += diff / 1000
-    #         self.bottom_height += diff / 1000
 
     def build_grid_layout(self):
         self.grid_layout = GridLayout(
@@ -411,56 +388,18 @@ class MyPaintApp(App):
             adjacent_image = adjacent_button.background_normal
             if adjacent_image == '':
                 break
-            # every line has one color, that is the first not unique
-            # compares one by one if its the
-            # same or unique and if not then break
-
             if not previous_image and adjacent_image != UNIQUE_BUTT:
                 previous_image = adjacent_image
-                # print(f'Set previous_image to {previous_image}')
-                # print('------------------------------')
             if previous_image and adjacent_image not in (
                     previous_image, UNIQUE_BUTT,
             ):
-                # print(f'image {adjacent_image} not matching previous_image')
-                # print(f'{previous_image} or unique {UNIQUE_BUTT}')
-                # print('------------------------------')
                 break
-
-# you you stack color to a line of same color or
-# line with same color +unique they disapear
-# but if you stack unique in middle or end
-# of line of same color nothing happens
-# if you stack 4 unique and 1 color the or 5 unique they disapear
-
             if adjacent_image in (current_image, UNIQUE_BUTT):
                 current_line.add((x, y))
                 print(
                     f'curentimag{current_image}andajacentimag{adjacent_image}',
                 )
                 print('------------------------------')
-
-# if the color is unique but the adjacent is not
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/green.png":
-#     current_line.add((x, y)) # have to indentify what color the
-#                              adjacent_image is so it removes only that color
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/pink.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/blue.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/yellow.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/turquoise.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/purple.png":
-#     current_line.add((x, y))
-# elif current_image == UNIQUE_BUTT and adjacent_image == "assets/orange.png":
-#     current_line.add((x, y))
-
-#     print(f"Added ({x}, {y}) to current_line; unique image matched with {adjacent_image}")
-#     print('------------------------------')
-# elif current_image == UNIQUE_BUTT and adjacent_image == current_image:
-#     current_line.add((x, y)) # problem potentioly here
 
     def is_within_bounds(self, x, y):
         return 0 <= x < 9 and 0 <= y < 9

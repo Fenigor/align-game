@@ -39,7 +39,6 @@ class FuncManager:
                     self.game.pos_set.discard((row, col))
 
     def create_save_exit_button(self):
-        # TODO: change to img when Kati gives it.
         img_source = 'assets/savexit.png'
         save_exit_button = Button(
             background_normal=img_source,
