@@ -17,6 +17,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 
 from astar import astar
+from handle_lines import ColorButtonManager
 from save_load_exit import FuncManager
 from score_manager import ScoreManager
 UNIQUE_BUTT = 'assets/crown.png'
@@ -25,11 +26,11 @@ BOARD = 'assets/board.jpg'
 IMAGE_LIST = [
     'assets/pink.png',
     'assets/green.png',
-    'assets/blue.png',
-    'assets/yellow.png',
-    'assets/turquoise.png',
-    'assets/orange.png',
-    'assets/purple.png',
+    # 'assets/blue.png',
+    # 'assets/yellow.png',
+    # 'assets/turquoise.png',
+    # 'assets/orange.png',
+    # 'assets/purple.png',
     UNIQUE_BUTT,
 ]
 
@@ -56,6 +57,7 @@ class MyPaintApp(App):
         self.func_manager = FuncManager(self)
         self.func_manager.load_game_state()
         self.is_moving = False
+        self.handle_lines = ColorButtonManager(self)
         try:
             self.no_path_sound = SoundLoader.load('assets/no path.wav')
         except Exception:
@@ -246,7 +248,7 @@ class MyPaintApp(App):
     def handle_reached_destination(self):
         start = self.selected_button[1], self.selected_button[2]
         self.update_logical_grid(self.path[-1][0], self.path[-1][1], start)
-        adjacent_lines = self.find_adjacent_lines(
+        adjacent_lines = self.handle_lines.find_adjacent_lines(
             self.path[-1][0],
             self.path[-1][1],
         )
@@ -254,6 +256,7 @@ class MyPaintApp(App):
             self.check_length_remove_square(adjacent_lines)
         self.enable_grid_buttons()
         self.is_moving = False
+        self.check_length_remove_square(adjacent_lines)
 
     def get_button_at(self, row, col):
         return self.grid_layout.children[9 * (8 - row) + (8 - col)]
@@ -376,23 +379,9 @@ class MyPaintApp(App):
             self.pos_set.remove(cord)
             self.logical_grid[cord[0]][cord[1]] = 1
             self.check_length_remove_square(
-                self.find_adjacent_lines(row, col),
+                self.handle_lines.find_adjacent_lines(row, col),
             )
 
-    def find_adjacent_lines(self, row, col):
-        directions = [
-            (1, 0), (0, 1), (1, 1), (1, -1),
-            (-1, 0), (0, -1), (-1, -1), (-1, 1),
-        ]
-        current_image = self.get_button_at(row, col).background_normal
-        adjacent_lines = set()
-        for i, direction in enumerate(directions):
-            current_line = self.find_line_in_direction(
-                set(), direction, row, col, current_image,
-            )
-            if len(current_line) >= 5:
-                adjacent_lines.update(current_line)
-        return adjacent_lines
     # maybe we should take all adjacent lines into account and than
     #  start checking each one and what it contains
     # for example we have a 2 horizontal lines
@@ -401,55 +390,6 @@ class MyPaintApp(App):
     # which color has the most adjacent to unique and that determines
     # what part of the line is to be removed
 
-    def find_line_in_direction(
-            self,
-            current_line,
-            direction,
-            row, col,
-            current_image,
-    ):
-        x, y = row, col
-        dir_x, dir_y = direction
-        previous_image = None
-        run = True
-        line_in_dir = []
-
-        while run:
-            if self.is_within_bounds(x, y):
-                adjacent_button = self.get_button_at(x, y)
-                adjacent_image = adjacent_button.background_normal
-                if adjacent_image == '':
-                    break
-
-                if not previous_image and adjacent_image != UNIQUE_BUTT:
-                    previous_image = adjacent_image
-
-                if previous_image and adjacent_image not in (previous_image, UNIQUE_BUTT):
-                    break
-
-                line_in_dir.append((x, y))
-
-                if current_image == UNIQUE_BUTT:
-                    if len(line_in_dir) >= 5:
-                        current_line.update(line_in_dir)
-                else:
-                    if adjacent_image == current_image or adjacent_image == UNIQUE_BUTT:
-                        current_line.add((x, y))
-                    else:
-                        if len(line_in_dir) >= 5:
-                            current_line.update(line_in_dir)
-                        break
-
-                x += dir_x
-                y += dir_y
-            else:
-                break
-
-        if len(current_line) >= 5:
-            return current_line
-        else:
-            return set()
-
     def is_within_bounds(self, x, y):
         return 0 <= x < 9 and 0 <= y < 9
 
@@ -457,7 +397,7 @@ class MyPaintApp(App):
         initial_length = len(self.pos_set)
         if lines:
             self.spawn = False
-            self.remove_line(lines)
+            self.handle_lines.remove_line(lines)
         self.score_manager.score += (initial_length - len(self.pos_set))
         self.score_manager.update_score_label()
 
