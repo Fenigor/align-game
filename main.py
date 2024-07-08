@@ -284,6 +284,7 @@ class MyPaintApp(App):
         images = [img.source for img in self.button_layout.children]
         self.update_button_layout_images()
         self.update_grid_with_new_images(cords, images)
+        self.handle_lines.find_adjacent_lines(cords[0][0], cords[0][1])
 
     def gameover(self):
         print('Game Over')

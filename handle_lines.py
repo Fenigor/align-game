@@ -15,6 +15,7 @@ class ColorButtonManager:
                 set(), direction, row, col, current_image,
             )
             if len(current_line) >= 5:
+                print(f'if len(current_line) >= 5: {current_line}')
                 adjacent_lines.update(current_line)
         return adjacent_lines
 
@@ -26,6 +27,7 @@ class ColorButtonManager:
         line_in_dir = []
 
         while run:
+
             if self.app.is_within_bounds(x, y):
                 adjacent_button = self.app.get_button_at(x, y)
                 adjacent_image = adjacent_button.background_normal
@@ -39,16 +41,20 @@ class ColorButtonManager:
                     break
 
                 line_in_dir.append((x, y))
+                print('--------------------')
+                print(f'line_in_dir.append((x, y)) {line_in_dir}')
+                print(f'{current_image}, {adjacent_image}')
+                print('--------------------')
 
                 if current_image == self.UNIQUE_BUTT:
-                    if len(line_in_dir) >= 5:
-                        current_line.update(line_in_dir)
+                    # if len(line_in_dir) >= 5:
+                    current_line.update(line_in_dir)
                 else:
                     if adjacent_image == current_image or adjacent_image == self.UNIQUE_BUTT:
                         current_line.add((x, y))
                     else:
-                        if len(line_in_dir) >= 5:
-                            current_line.update(line_in_dir)
+                        # if len(line_in_dir) >= 5:
+                        current_line.update(line_in_dir)
                         break
 
                 x += dir_x
