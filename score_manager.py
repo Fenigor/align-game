@@ -34,7 +34,10 @@ class ScoreManager:
             with open(self.score_file) as file:
                 lines = file.readlines()
                 if len(lines) >= 5:
-                    scores = [int(score) for score in lines[4].strip().split(',')]
+                    scores = [
+                        int(score)
+                        for score in lines[4].strip().split(',')
+                    ]
         except FileNotFoundError as e:
             return e
         return scores

@@ -25,11 +25,11 @@ BOARD = 'assets/board.jpg'
 IMAGE_LIST = [
     'assets/pink.png',
     'assets/green.png',
-    # 'assets/blue.png',
-    # 'assets/yellow.png',
-    # 'assets/turquoise.png',
-    # 'assets/orange.png',
-    # 'assets/purple.png',
+    'assets/blue.png',
+    'assets/yellow.png',
+    'assets/turquoise.png',
+    'assets/orange.png',
+    'assets/purple.png',
     UNIQUE_BUTT,
 ]
 
@@ -78,15 +78,15 @@ class MyPaintApp(App):
         # self.bottom_height = 1.0
 
     # algorytm for dynamic scaling
-    # def window_size(self, instance, width, height):
-    #     if width > height:
-    #         diff = width - height
-    #         self.right_wide += diff / 1000
-    #         self.left_wide += diff / 1000
-    #     if height > width:
-    #         diff = height - width
-    #         self.top_height += diff / 1000
-    #         self.bottom_height += diff / 1000
+    def window_size(self, instance, width, height):
+        if width > 1200:
+            diff = width - height
+            self.right_wide += diff / 1000
+            self.left_wide += diff / 1000
+        if height > width:
+            diff = height - width
+            self.top_height += diff / 1000
+            self.bottom_height += diff / 1000
 
     def build_grid_layout(self, cols=9, rows=9, spacing=16):
         self.grid_layout = GridLayout(
@@ -385,14 +385,21 @@ class MyPaintApp(App):
             (-1, 0), (0, -1), (-1, -1), (-1, 1),
         ]
         current_image = self.get_button_at(row, col).background_normal
-        adjacent_lines = {i: {(row, col)} for i in range(4)}
+        adjacent_lines = set()
         for i, direction in enumerate(directions):
-            self.find_line_in_direction(
-                adjacent_lines[i % 4],
-                direction, row, col,
-                current_image,
+            current_line = self.find_line_in_direction(
+                set(), direction, row, col, current_image,
             )
+            if len(current_line) >= 5:
+                adjacent_lines.update(current_line)
         return adjacent_lines
+    # maybe we should take all adjacent lines into account and than
+    #  start checking each one and what it contains
+    # for example we have a 2 horizontal lines
+    # firs one is just 3 blue, we leave it
+    # second one is 4 blue 1 unique and 3 green, we count
+    # which color has the most adjacent to unique and that determines
+    # what part of the line is to be removed
 
     def find_line_in_direction(
             self,
@@ -405,97 +412,53 @@ class MyPaintApp(App):
         dir_x, dir_y = direction
         previous_image = None
         run = True
+        line_in_dir = []
+
         while run:
-            x += dir_x
-            y += dir_y
-            if not self.is_within_bounds(x, y):
+            if self.is_within_bounds(x, y):
+                adjacent_button = self.get_button_at(x, y)
+                adjacent_image = adjacent_button.background_normal
+                if adjacent_image == '':
+                    break
+
+                if not previous_image and adjacent_image != UNIQUE_BUTT:
+                    previous_image = adjacent_image
+
+                if previous_image and adjacent_image not in (previous_image, UNIQUE_BUTT):
+                    break
+
+                line_in_dir.append((x, y))
+
+                if current_image == UNIQUE_BUTT:
+                    if len(line_in_dir) >= 5:
+                        current_line.update(line_in_dir)
+                else:
+                    if adjacent_image == current_image or adjacent_image == UNIQUE_BUTT:
+                        current_line.add((x, y))
+                    else:
+                        if len(line_in_dir) >= 5:
+                            current_line.update(line_in_dir)
+                        break
+
+                x += dir_x
+                y += dir_y
+            else:
                 break
-            adjacent_button = self.get_button_at(x, y)
-            adjacent_image = adjacent_button.background_normal
-            if adjacent_image == '':
-                break
-            # every line has one color, that is the first not unique
-            # compares one by one if its the
-            # same or unique and if not then break
 
-            if not previous_image and adjacent_image != UNIQUE_BUTT:
-                previous_image = adjacent_image
-
-                # print(f'Set previous_image to {previous_image}')
-                # print('------------------------------')
-            if previous_image and adjacent_image not in (
-                    previous_image, UNIQUE_BUTT,
-            ):
-                # print(f'image {adjacent_image} not matching previous_image')
-                # print(f'{previous_image} or unique {UNIQUE_BUTT}')
-                # print('------------------------------')
-                break
-
-# you you stack color to a line of same color or
-# line with same color +unique they disapear
-# but if you stack unique in middle or end
-# of line of same color nothing happens
-# if you stack 4 unique and 1 color the or 5 unique they disapear
-
-            # if adjacent_image in (current_image, UNIQUE_BUTT):
-            #     current_line.add((x, y))
-            if current_image == 'assets/green.png' and (adjacent_image == 'assets/green.png' or adjacent_image == UNIQUE_BUTT):
-                current_line.add((x, y))
-                print('current green to green or unique')
-            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/green.png':
-                if (x, y) in current_line in adjacent_image:
-                    current_line.add((x, y))
-
-            # elif current_image == UNIQUE_BUTT and adjacent_image != 'assets/green.png':
-            #     if (x, y) in current_line in adjacent_image:
-            #         current_line.add((x, y))
-            #     if (x, y) in current_line in adjacent_image == UNIQUE_BUTT:
-            #         current_line.add((x, y))
-
-            if current_image == 'assets/pink.png' and (adjacent_image == 'assets/pink.png' or adjacent_image == UNIQUE_BUTT):
-                run = True
-                current_line.add((x, y))
-            elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/pink.png':
-                current_line.add((x, y))
-            # elif current_image == UNIQUE_BUTT and adjacent_image != 'assets/pink.png':
-            #     continue
-
-
-# if the color is unique but the adjacent is not
-            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/green.png':
-            #     current_line.add((x, y))  # have to indentify what color the
-            #     # adjacent_image is so it removes only that color
-
-            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/pink.png':
-                # if (x, y) in current_line in adjacent_image:
-                #     current_line.add((x, y))
-                # if (x, y) in current_line in adjacent_image == UNIQUE_BUTT:
-                #     current_line.add((x, y))
-            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/pink.png':
-
-            #     current_line.add((x, y))
-
-            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/blue.png':
-            #     current_line.add((x, y))
-            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/yellow.png':
-            #     current_line.add((x, y))
-            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/turquoise.png':
-            #     current_line.add((x, y))
-            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/purple.png':
-            #     current_line.add((x, y))
-            # elif current_image == UNIQUE_BUTT and adjacent_image == 'assets/orange.png':
-            #     current_line.add((x, y))
+        if len(current_line) >= 5:
+            return current_line
+        else:
+            return set()
 
     def is_within_bounds(self, x, y):
         return 0 <= x < 9 and 0 <= y < 9
 
     def check_length_remove_square(self, lines):
-        variable = len(self.pos_set)
-        for line in lines.values():
-            if len(line) >= 5:
-                self.spawn = False
-                self.remove_line(line)
-        self.score_manager.score += (len(self.pos_set) - variable)
+        initial_length = len(self.pos_set)
+        if lines:
+            self.spawn = False
+            self.remove_line(lines)
+        self.score_manager.score += (initial_length - len(self.pos_set))
         self.score_manager.update_score_label()
 
     def remove_line(self, line):
@@ -572,7 +535,7 @@ class MyPaintApp(App):
 
         middle_layout = BoxLayout(orientation='horizontal')
         predicted_layout = self.build_predicted_layout()
-        middle_layout.add_widget(predicted_layout)
+        middle_layout.add_widget(predicted_layout, (self.top_height, 1.0))
         grid_layout = self.build_grid_layout()
         middle_layout.add_widget(grid_layout)
         right_layout = self.build_placeholder_layout(
