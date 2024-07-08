@@ -20,24 +20,8 @@ class MyPaintApp(App):
         self.button_layout = None
         self.right_wide = 0.11
         self.left_wide = 0.36
-        self.top_height = 0.83
-        self.bottom_height = 0.55
-
-    # def window_size(self, _, width, height):
-    #     if width > height:
-    #         diff = (width / 1000) - (height / 1000)
-    #         self.right_wide += diff
-    #         self.left_wide += diff
-    #     if height > width:
-    #         diff = (height / 1000) - (width / 1000)
-    #         self.top_height += diff
-    #         self.bottom_height += diff
-
-        # print(f'Window size: {width}x{height}')
-        # print(f"left_wide: {self.left_wide}")
-        # print(f"right_wide: {self.right_wide}")
-        # print(f"top_height: {self.top_height}")
-        # print(f"bottom_height: {self.bottom_height}")
+        self.top_height = 0.87
+        self.bottom_height = 0.6
 
     def build_grid_layout(self):
         self.grid_layout = GridLayout(
@@ -54,7 +38,7 @@ class MyPaintApp(App):
     def create_grid_button(self, row, col):
         btn = Button(
             background_normal='', background_color=[1, 1, 1, 1],
-            size_hint=(50.0, 50.0),
+            size_hint=(49.0, 49.0),
         )
         btn.background_disabled_normal = btn.background_normal
         btn.bind(
@@ -173,25 +157,3 @@ class MyPaintApp(App):
 
 if __name__ == '__main__':
     MyPaintApp().run()
-
-
-# 23. Merge k Sorted Lists
-# lists = []
-
-# def list_stuff(lists):
-#     ass = [*lists]
-#     sorted_list = []
-#     if ass == []:
-#         return []
-#     elif len(ass) >= 1:
-#         for i in ass:
-#             if i == []:
-#                 continue
-#             elif len(i) >= 1:
-#                 for j in i:
-#                     sorted_list.append(j)
-#         return sorted(sorted_list)
-
-
-# result = list_stuff(lists)
-# print(f"result: {result}")

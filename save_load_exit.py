@@ -26,7 +26,7 @@ class FuncManager:
             file.write(f'{set()}\n')
             file.write(f'{[[0] * 9 for _ in range(9)]}\n')
             file.write(f'{[[None] * 9 for _ in range(9)]}\n')
-            file.write(f'{0}\n')
+            file.write('0')
 
     def apply_game_state(self):
         self.game.score_manager.update_score_label()

@@ -55,7 +55,10 @@ class MyPaintApp(App):
         self.score_manager = ScoreManager(self)
         self.func_manager = FuncManager(self)
         self.func_manager.load_game_state()
-        self.no_path_sound = SoundLoader.load('assets/no path.wav')
+        try:
+            self.no_path_sound = SoundLoader.load('assets/no path.wav')
+        except FileNotFoundError:
+            pass
         self.is_moving = False
 
         self.right_wide = 0.11

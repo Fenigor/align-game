@@ -23,15 +23,17 @@ class ScoreManager:
         self.sc_button.bind(on_press=self.score_check)
         return self.sc_button
 
-    def score_check(self, _):
+    def read_scores(self):
         scores = []
-
         with open(self.score_file) as file:
             lines = file.readlines()
             if len(lines) >= 5:
                 scores = [int(score) for score in lines[4].strip().split(',')]
-        if scores[0] == 0:
+        if scores and scores[0] == 0:
             print('no score yet')
+        return scores
+
+    def display_score_overlay(self, scores):
         if self.game.overlay is None:
             self.game.overlay = Widget()
             with self.game.overlay.canvas:
@@ -40,16 +42,17 @@ class ScoreManager:
                     pos=self.game.root.pos,
                     size=self.game.root.size,
                 )
-            pos_text = (f'Position left: {len(self.game.pos_set)}')
+
+            pos_text = f'Position left: {len(self.game.pos_set)}'
             pos_label = Label(
                 text=pos_text,
                 font_size=40,
                 color=[1, 1, 1, 1],
                 pos=(self.game.root.width * 0.4, self.game.root.height * 0.1),
             )
+
             score_text = '\n'.join(
-                f'{i + 1}. {score}' for i,
-                score in enumerate(scores)
+                f'{i + 1}. {score}' for i, score in enumerate(scores)
             )
             scores_label = Label(
                 text=score_text,
@@ -57,10 +60,15 @@ class ScoreManager:
                 color=[1, 1, 1, 1],
                 pos=(self.game.root.width * 0.4, self.game.root.height * 0.5),
             )
+
             self.game.overlay.add_widget(scores_label)
             self.game.overlay.add_widget(pos_label)
             self.game.root.add_widget(self.game.overlay)
             self.game.overlay.bind(on_touch_down=self.score_overlay_touch)
+
+    def score_check(self, _):
+        scores = self.read_scores()
+        self.display_score_overlay(scores)
 
     def score_overlay_touch(self, touch, instance):
         self.game.root.remove_widget(self.game.overlay)
