@@ -55,8 +55,19 @@ class ColorButtonManager:
                     self.app.clear_button(x, y)
 
     def remove_lines_if_unique(self, row, col):
-        current_image = self.app.get_button_at(row, col).background_normal
+        current_button = self.app.get_button_at(row, col)
+        current_image = current_button.background_normal
+        print(f'Current Image: {current_image}')
+        print(row, col)
         if current_image == self.UNIQUE_BUTT:
             lines = self.find_adjacent_lines(row, col)
+            print(f'Adjacent Lines: {lines}')
+            # it fails to add the lines and never
+            # reaches 5 or more to sent to remove_lines
             if len(lines) >= 5:
+                print('Removing lines...')
                 self.remove_line(lines)
+            else:
+                print('Not enough lines to remove.')
+        else:
+            print('Not a unique button.')
