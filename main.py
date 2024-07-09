@@ -17,6 +17,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 
 from astar import astar
+from handle_lines import ColorButtonManager
 from save_load_exit import FuncManager
 from score_manager import ScoreManager
 UNIQUE_BUTT = 'assets/crown.png'
@@ -60,17 +61,44 @@ class MyPaintApp(App):
         except FileNotFoundError:
             pass
         self.is_moving = False
-
+        self.handle_lines = ColorButtonManager(self)
+        try:
+            self.no_path_sound = SoundLoader.load('assets/no path.wav')
+        except Exception:
+            return None
         self.right_wide = 0.11
         self.left_wide = 0.36
         self.top_height = 0.77
         self.bottom_height = 0.50
 
-    def build_grid_layout(self):
+        # scaling for tablet 1200x2000
+        # self.right_wide = 0.11
+        # self.left_wide = 0.36
+        # self.top_height = 0.83
+        # self.bottom_height = 0.55
+
+        # phone scaling
+        # self.right_wide = 0.11
+        # self.left_wide = 0.36
+        # self.top_height = 1.267
+        # self.bottom_height = 1.0
+
+    # algorytm for dynamic scaling
+    def window_size(self, instance, width, height):
+        if width > 1200:
+            diff = width - height
+            self.right_wide += diff / 1000
+            self.left_wide += diff / 1000
+        if height > width:
+            diff = height - width
+            self.top_height += diff / 1000
+            self.bottom_height += diff / 1000
+
+    def build_grid_layout(self, cols=9, rows=9, spacing=16):
         self.grid_layout = GridLayout(
-            cols=9, rows=9,
+            cols=cols, rows=rows,
             size_hint=(1.0, 1.0),
-            spacing=16,
+            spacing=spacing,
         )
         for row in range(9):
             for col in range(9):
@@ -224,14 +252,14 @@ class MyPaintApp(App):
     def handle_reached_destination(self):
         start = self.selected_button[1], self.selected_button[2]
         self.update_logical_grid(self.path[-1][0], self.path[-1][1], start)
-        adjacent_lines = self.find_adjacent_lines(
-            self.path[-1][0],
-            self.path[-1][1],
-        )
+        row, col = self.path[-1][0], self.path[-1][1]
+        self.handle_lines.remove_lines_if_unique(row, col)
+        adjacent_lines = self.handle_lines.find_adjacent_lines(row, col)
         if adjacent_lines:
             self.check_length_remove_square(adjacent_lines)
         self.enable_grid_buttons()
         self.is_moving = False
+        self.check_length_remove_square(adjacent_lines)
 
     def get_button_at(self, row, col):
         return self.grid_layout.children[9 * (8 - row) + (8 - col)]
@@ -259,6 +287,7 @@ class MyPaintApp(App):
         images = [img.source for img in self.button_layout.children]
         self.update_button_layout_images()
         self.update_grid_with_new_images(cords, images)
+        # self.handle_lines.find_adjacent_lines(cords[0][0], cords[0][1])
 
     def gameover(self):
         print('Game Over')
@@ -354,74 +383,34 @@ class MyPaintApp(App):
             self.pos_set.remove(cord)
             self.logical_grid[cord[0]][cord[1]] = 1
             self.check_length_remove_square(
-                self.find_adjacent_lines(row, col),
+                self.handle_lines.find_adjacent_lines(row, col),
             )
 
-    def find_adjacent_lines(self, row, col):
-        directions = [
-            (1, 0), (0, 1), (1, 1), (1, -1),
-            (-1, 0), (0, -1), (-1, -1), (-1, 1),
-        ]
-        current_image = self.get_button_at(row, col).background_normal
-        adjacent_lines = {i: {(row, col)} for i in range(4)}
-        for i, direction in enumerate(directions):
-            self.find_line_in_direction(
-                adjacent_lines[i % 4],
-                direction, row, col,
-                current_image,
-            )
-        return adjacent_lines
-
-    def find_line_in_direction(
-            self,
-            current_line,
-            direction,
-            row, col,
-            current_image,
-    ):
-        x, y = row, col
-        dir_x, dir_y = direction
-        previous_image = None
-        while True:
-            x += dir_x
-            y += dir_y
-            if not self.is_within_bounds(x, y):
-                break
-            adjacent_button = self.get_button_at(x, y)
-            adjacent_image = adjacent_button.background_normal
-            if adjacent_image == '':
-                break
-            if not previous_image and adjacent_image != UNIQUE_BUTT:
-                previous_image = adjacent_image
-            if previous_image and adjacent_image not in (
-                    previous_image, UNIQUE_BUTT,
-            ):
-                break
-            if adjacent_image in (current_image, UNIQUE_BUTT):
-                current_line.add((x, y))
-                print(
-                    f'curentimag{current_image}andajacentimag{adjacent_image}',
-                )
-                print('------------------------------')
+    # maybe we should take all adjacent lines into account and than
+    #  start checking each one and what it contains
+    # for example we have a 2 horizontal lines
+    # firs one is just 3 blue, we leave it
+    # second one is 4 blue 1 unique and 3 green, we count
+    # which color has the most adjacent to unique and that determines
+    # what part of the line is to be removed
 
     def is_within_bounds(self, x, y):
         return 0 <= x < 9 and 0 <= y < 9
 
     def check_length_remove_square(self, lines):
-        variable = len(self.pos_set)
-        for line in lines.values():
-            if len(line) >= 5:
-                self.spawn = False
-                self.remove_line(line)
-        self.score_manager.score += (len(self.pos_set) - variable)
+        initial_length = len(self.pos_set)
+        if lines:
+            self.spawn = False
+            self.handle_lines.remove_line(lines)
+        self.score_manager.score += (initial_length - len(self.pos_set))
         self.score_manager.update_score_label()
 
-    def remove_line(self, line):
-        for x, y in line:
-            if self.is_within_bounds(x, y):
-                button_index = 9 * (8 - x) + (8 - y)
-                if button_index < len(self.grid_layout.children):
-                    self.clear_button(x, y)
+    # def remove_line(self, line):
+    #     for x, y in line:
+    #         if self.is_within_bounds(x, y):
+    #             button_index = 9 * (8 - x) + (8 - y)
+    #             if button_index < len(self.grid_layout.children):
+    #                 self.clear_button(x, y)
 
     def clear_button(self, x, y):
         self.get_button_at(x, y).background_normal = ''
@@ -490,7 +479,7 @@ class MyPaintApp(App):
 
         middle_layout = BoxLayout(orientation='horizontal')
         predicted_layout = self.build_predicted_layout()
-        middle_layout.add_widget(predicted_layout)
+        middle_layout.add_widget(predicted_layout, (self.top_height, 1.0))
         grid_layout = self.build_grid_layout()
         middle_layout.add_widget(grid_layout)
         right_layout = self.build_placeholder_layout(
