@@ -14,7 +14,6 @@ class ScoreManager:
         self.score_file = 'score.txt'
 
     def score_check_button(self):
-        # TODO: CHANGE TO STAR when Kati provides the img
         img_source = 'assets/score.png'
         self.sc_button = Button(
             background_normal=img_source,
@@ -24,25 +23,17 @@ class ScoreManager:
         self.sc_button.bind(on_press=self.score_check)
         return self.sc_button
 
-    def score_check(self, _):
-        scores = self.read_scores_from_file()
-        self.setup_overlay(scores)
-
-    def read_scores_from_file(self):
+    def read_scores(self):
         scores = []
-        try:
-            with open(self.score_file) as file:
-                lines = file.readlines()
-                if len(lines) >= 5:
-                    scores = [
-                        int(score)
-                        for score in lines[4].strip().split(',')
-                    ]
-        except FileNotFoundError as e:
-            return e
+        with open(self.score_file) as file:
+            lines = file.readlines()
+            if len(lines) >= 5:
+                scores = [int(score) for score in lines[4].strip().split(',')]
+        if scores and scores[0] == 0:
+            print('no score yet')
         return scores
 
-    def setup_overlay(self, scores):
+    def display_score_overlay(self, scores):
         if self.game.overlay is None:
             self.game.overlay = Widget()
             with self.game.overlay.canvas:
@@ -51,6 +42,7 @@ class ScoreManager:
                     pos=self.game.root.pos,
                     size=self.game.root.size,
                 )
+
             pos_text = f'Position left: {len(self.game.pos_set)}'
             pos_label = Label(
                 text=pos_text,
@@ -58,6 +50,7 @@ class ScoreManager:
                 color=[1, 1, 1, 1],
                 pos=(self.game.root.width * 0.4, self.game.root.height * 0.1),
             )
+
             score_text = '\n'.join(
                 f'{i + 1}. {score}' for i, score in enumerate(scores)
             )
@@ -67,10 +60,15 @@ class ScoreManager:
                 color=[1, 1, 1, 1],
                 pos=(self.game.root.width * 0.4, self.game.root.height * 0.5),
             )
+
             self.game.overlay.add_widget(scores_label)
             self.game.overlay.add_widget(pos_label)
             self.game.root.add_widget(self.game.overlay)
             self.game.overlay.bind(on_touch_down=self.score_overlay_touch)
+
+    def score_check(self, _):
+        scores = self.read_scores()
+        self.display_score_overlay(scores)
 
     def score_overlay_touch(self, touch, instance):
         self.game.root.remove_widget(self.game.overlay)
@@ -86,6 +84,5 @@ class ScoreManager:
             pos_hint={'x': 0.64, 'y': 0.784},
             size_hint=(dp(0.2), dp(0.2)),
             font_size=sp(49),
-
             halign='center',
         )

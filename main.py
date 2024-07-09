@@ -26,11 +26,11 @@ BOARD = 'assets/board.jpg'
 IMAGE_LIST = [
     'assets/pink.png',
     'assets/green.png',
-    # 'assets/blue.png',
-    # 'assets/yellow.png',
-    # 'assets/turquoise.png',
-    # 'assets/orange.png',
-    # 'assets/purple.png',
+    'assets/blue.png',
+    'assets/yellow.png',
+    'assets/turquoise.png',
+    'assets/orange.png',
+    'assets/purple.png',
     UNIQUE_BUTT,
 ]
 
@@ -56,6 +56,10 @@ class MyPaintApp(App):
         self.score_manager = ScoreManager(self)
         self.func_manager = FuncManager(self)
         self.func_manager.load_game_state()
+        try:
+            self.no_path_sound = SoundLoader.load('assets/no path.wav')
+        except FileNotFoundError:
+            pass
         self.is_moving = False
         self.handle_lines = ColorButtonManager(self)
         try:
